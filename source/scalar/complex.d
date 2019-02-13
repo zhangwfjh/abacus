@@ -15,7 +15,7 @@ struct Complex(size_t nbits)
     alias Real = scalar.decimal.Float!nbits;
     Real re, im;
 
-    @safe @nogc pure nothrow this(Real _re, Real _im)
+    @safe @nogc pure nothrow this(Real _re, Real _im = 0)
     {
         re = _re;
         im = _im;
@@ -39,6 +39,20 @@ struct Complex(size_t nbits)
     @safe pure Complex inverse() const @property
     {
         return Complex(re / (re^^2 + im^^2), -im / (re^^2 + im^^2));
+    }
+
+    ref Complex opAssign(Real other)
+    {
+        re = other;
+        im = 0;
+        return this;
+    }
+
+    ref Complex opAssign(Complex other)
+    {
+        re = other.re;
+        im = other.im;
+        return this;
     }
 
     @safe Complex opBinary(string op)(Complex other) const
