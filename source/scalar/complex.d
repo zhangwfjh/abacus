@@ -39,11 +39,19 @@ struct Complex(size_t nbits)
         }
     }
 
+    ///calculate the square of absolute value of complex
+    @safe pure Real abs2() const @property
+    {
+        return re^^2 + im^^2;
+    }
+
     ///calculate the absolute value of complex
     @safe pure Real abs() const @property
     {
-        return sqrt(re^^2 + im^^2);
+        return sqrt(this.abs2());
     }
+
+    
 
     ///return the conjugate complex
     @safe pure Complex conjugate() const @property
