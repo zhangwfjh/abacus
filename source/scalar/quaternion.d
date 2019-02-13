@@ -1,5 +1,7 @@
 module scalar.quaternion;
 
+import std.typecons;
+
 /++
 Quaternion is a template class for quaternion numbers.
 
@@ -25,20 +27,20 @@ struct Quaternion(size_t nbits, string components = "a, b, c, d")
     {
         import std.format : format;
 
-        // TODO
+        // FIXME: Improve readability
         return format!"%s+%si+%sj+%sk"(_[0], _[1], _[2], _[3]);
     }
 
 @safe @nogc pure nothrow:
 
     // Constructors
-    ///
+    /// this(real)
     this(Real _0)
     {
         _[0] = _0;
     }
 
-    ///
+    /// this(quaternion)
     this(Real _0, Real _1, Real _2, Real _3)
     {
         _[0] = _0;
@@ -58,21 +60,14 @@ struct Quaternion(size_t nbits, string components = "a, b, c, d")
         return this;
     }
 
-    /// this = quaternion
-    ref Quaternion opAssign(Quaternion q)
-    {
-        _[] = q._[];
-        return this;
-    }
-
     // Equality comparison
-    /// this = real
+    /// this == real
     bool opEquals(Real r) const
     {
         return _[0] == r && _[1] == 0 && _[2] == 0 && _[3] == 0;
     }
 
-    /// this = quaternion
+    /// this == quaternion
     bool opEquals(Quaternion q) const
     {
         return _[] == q._[];
@@ -92,14 +87,14 @@ struct Quaternion(size_t nbits, string components = "a, b, c, d")
     }
 
     // Binary operators
-    ///
+    /// += -= quaternion
     ref Quaternion opOpAssign(string op)(Quaternion q) if (op == "+" || op == "-")
     {
         mixin(`_[] ` ~ op ~ `= q._[];`);
         return this;
     }
 
-    ///
+    /// *= quaternion
     ref Quaternion opOpAssign(string op)(Quaternion q) if (op == "*")
     {
         _[0] = _[0] * q._[0] - _[1] * q._[1] - _[2] * q._[2] - _[3] * q._[3];
@@ -109,104 +104,119 @@ struct Quaternion(size_t nbits, string components = "a, b, c, d")
         return this;
     }
 
-    ///
+    /// /= quaternion
     ref Quaternion opOpAssign(string op)(Quaternion q) if (op == "/")
     {
-        return this *= inverse;
-    }
-
-    ///
-    ref Quaternion opOpAssign(string op)(Quaternion q) if (op == "^^")
-    {
-        /// BAD
+        immutable qInvMod2 = 1 / q.mod2;
+        _[0] = (_[0] * q._[0] + _[1] * q._[1] + _[2] * q._[2] + _[3] * q._[3]) * qInvMod2;
+        _[1] = (-_[0] * q._[1] + _[1] * q._[0] - _[2] * q._[3] + _[3] * q._[2]) * qInvMod2;
+        _[2] = (-_[0] * q._[2] + _[2] * q._[0] - _[3] * q._[1] + _[1] * q._[3]) * qInvMod2;
+        _[3] = (-_[0] * q._[3] + _[3] * q._[0] - _[1] * q._[2] + _[2] * q._[1]) * qInvMod2;
         return this;
     }
 
-    ///
+    /// ^^= quaternion
+    ref Quaternion opOpAssign(string op)(Quaternion q) if (op == "^^")
+    {
+        /// TODO:
+        return this;
+    }
+
+    /// *= /= real
     ref Quaternion opOpAssign(string op)(Real r) if (op == "*" || op == "/")
     {
         mixin(`_[] ` ~ op ~ `= r;`);
         return this;
     }
 
-    ///
+    /// ^^= real
     ref Quaternion opOpAssign(string op)(Real r) if (op == "^^")
     {
-        /// BAD
+        /// TODO:
         return this;
     }
 
-    ///
+    /// quaternion + - * / ^^ quaternion
     Quaternion opBinary(string op)(Quaternion q) const
     {
         auto res = Quaternion(this);
         return res.opOpAssign!op(q);
     }
 
-    ///
+    /// quaternion + - * / ^^ real
     Quaternion opBinary(string op)(Real r) const
     {
         auto res = Quaternion(this);
         return res.opOpAssign!op(r);
     }
 
-    ///
+    /// real + * quaternion
     Quaternion opBinaryRight(string op)(Real r) const if (op == "+" || op == "*")
     {
         return opBinary!op(r);
     }
 
-    ///
+    /// real - quaternion
     Quaternion opBinaryRight(string op)(Real r) const if (op == "-")
     {
         return Quaternion(r - _[0], -_[1], -_[2], -_[3]);
     }
 
-    ///
+    /// real / quaternion
     Quaternion opBinaryRight(string op)(Real r) const if (op == "/")
     {
         return inverse * r;
     }
 
-    ///
+    /// real ^^ quaternion
     Quaternion opBinaryRight(string op)(Real r) const if (op == "^^")
     {
-        // BAD
+        // TODO:
         return Quaternion();
     }
 
-    // Operations
-    ///
-    @property Real mod2() const
+    // Properties
+@property:
+    /// scalar part
+    Real scalar() const
+    {
+        return _[0];
+    }
+
+    /// vector part
+    Tuple!(Real, Real, Real) vector() const
+    {
+        return tuple(_[1], _[2], _[3]);
+    }
+
+    /// mod2
+    Real mod2() const
     {
         return _[0] * _[0] + _[1] * _[1] + _[2] * _[2] + _[3] * _[3];
     }
 
-    ///
-    @property Real mod() const
+    /// mod
+    Real mod() const
     {
         import std.math : sqrt;
 
         return sqrt(mod2);
     }
 
-    ///
-    @property Quaternion conjugate() const
+    /// conjugate
+    Quaternion conjugate() const
     {
         return Quaternion(_[0], -_[1], -_[2], -_[3]);
     }
 
-    ///
-    @property Quaternion inverse() const
+    /// inverse
+    Quaternion inverse() const
     {
         return conjugate /= mod2;
     }
 
     @safe pure nothrow unittest
     {
-        auto quat = Quaternion!(32, "x, y, z, w")(1, 0, 0, 0);
-
-        assert(quat.x == 1);
-        // TODO
+        // TODO:
     }
 }
