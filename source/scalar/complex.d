@@ -96,7 +96,7 @@ struct Complex(size_t nbits)
         }
         else static if (op == "^^")
         {
-            ///TODO:
+            ///TODO:   
         }
 
         return this;
@@ -122,16 +122,10 @@ struct Complex(size_t nbits)
         return res.opBinary!op(Complex(other, 0));
     }
 
-    ///overload binary operators +,-,*,/ and ^^ for complex on the left
-    @safe Complex opBinaryRight(string op)(Complex other) const
-    {
-        return opBinary!op(other);
-    }
-
     ///overload binary operators +,-,*,/ and ^^ for decimal on the left
     @safe Complex opBinaryRight(string op)(Real other) const
     {
-        return opBinaryRight!op(Complex(other, 0));
+        return Complex(other, 0).opBinaryRight!op(this);
     }
 
     ///overload unary operators +,- and ~
