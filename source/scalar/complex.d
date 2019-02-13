@@ -48,13 +48,6 @@ struct Complex(size_t nbits)
         return this;
     }
 
-    ref Complex opAssign(Complex other)
-    {
-        re = other.re;
-        im = other.im;
-        return this;
-    }
-
     @safe Complex opBinary(string op)(Complex other) const
     {
         static if (op == "+")
