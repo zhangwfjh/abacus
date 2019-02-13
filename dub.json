@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"Shuan Zhang"
+	],
+	"copyright": "Copyright © 2019, Shuan Zhang",
+	"description": "A numerical library for basic math",
+	"license": "MIT",
+	"name": "abacus"
+}

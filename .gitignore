@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/abacus
+abacus.so
+abacus.dylib
+abacus.dll
+abacus.a
+abacus.lib
+abacus-test-*
+app.d
+*.exe
+*.o
+*.obj
+*.lst
