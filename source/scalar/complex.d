@@ -1,3 +1,9 @@
+/+++++++++
+@Author: NeilKleistGao
+@Date: 2019-02-14
+@Filename: complex.d
++++++++++/
+
 module scalar.complex;
 
 import scalar.decimal : Float;
@@ -76,13 +82,13 @@ struct Complex(size_t nbits)
     {
         static if (op == "+")
         {
-            re = re + other.re;
-            im = im + other.im;
+            re += other.re;
+            im += other.im;
         }
         else static if (op == "-")
         {
-            re = re - other.re;
-            im = im - other.im;
+            re -= other.re;
+            im -= other.im;
         }
         else static if (op == "*")
         {
@@ -96,7 +102,7 @@ struct Complex(size_t nbits)
         }
         else static if (op == "^^")
         {
-            ///TODO:   
+            ///BAD
         }
 
         return this;
@@ -105,7 +111,30 @@ struct Complex(size_t nbits)
     ///overload operators +=, -=, *=, /= and ^^= for decimal
     ref Complex opOpAssign(string op)(Real other)
     {
-        return opOpAssign!op(Complex(other, 0));
+        static if (op == "+")
+        {
+            re = re + other.re;
+        }
+        else static if (op == "-")
+        {
+            re = re - other.re;
+        }
+        else static if (op == "*")
+        {
+            re *= other;
+            im *= other;
+        }
+        else static if (op == "/")
+        {
+            re /= other;
+            im /= other;
+        }
+        else static if (op == "^^")
+        {
+            ///TODO:
+        }
+
+        return this;
     }
 
     ///overload binary operators +,-,*,/ and ^^ for complex on the right
@@ -119,13 +148,13 @@ struct Complex(size_t nbits)
     @safe Complex opBinary(string op)(Real other) const
     {
         auto res = Complex(this);
-        return res.opBinary!op(Complex(other, 0));
+        return res.opBinary!op(other);
     }
 
     ///overload binary operators +,-,*,/ and ^^ for decimal on the left
     @safe Complex opBinaryRight(string op)(Real other) const
     {
-        return Complex(other, 0).opBinaryRight!op(this);
+        return this.opBinary!op(other);
     }
 
     ///overload unary operators +,- and ~
