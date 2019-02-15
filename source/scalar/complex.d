@@ -80,15 +80,10 @@ struct Complex(size_t nbits)
     ///overload operators +=, -=, *=, /= and ^^=
     ref Complex opOpAssign(string op)(Complex other)
     {
-        static if (op == "+")
+        static if (op == "+" || op == "-")
         {
-            re += other.re;
-            im += other.im;
-        }
-        else static if (op == "-")
-        {
-            re -= other.re;
-            im -= other.im;
+            mixin("re"~op~"=other.re");
+            mixin("im"~op~"=other.im");
         }
         else static if (op == "*")
         {
@@ -102,7 +97,7 @@ struct Complex(size_t nbits)
         }
         else static if (op == "^^")
         {
-            ///BAD
+            ///TODO:
         }
 
         return this;
@@ -111,23 +106,14 @@ struct Complex(size_t nbits)
     ///overload operators +=, -=, *=, /= and ^^= for decimal
     ref Complex opOpAssign(string op)(Real other)
     {
-        static if (op == "+")
+        static if (op == "+" || op == "-")
         {
-            re = re + other.re;
+            mixin("re"~op~"=other");
         }
-        else static if (op == "-")
+        else static if (op == "*" || op == "/")
         {
-            re = re - other.re;
-        }
-        else static if (op == "*")
-        {
-            re *= other;
-            im *= other;
-        }
-        else static if (op == "/")
-        {
-            re /= other;
-            im /= other;
+            mixin("re"~op~"=other");
+            mixin("im"~op~"=other");
         }
         else static if (op == "^^")
         {
@@ -154,7 +140,18 @@ struct Complex(size_t nbits)
     ///overload binary operators +,-,*,/ and ^^ for decimal on the left
     @safe Complex opBinaryRight(string op)(Real other) const
     {
-        return this.opBinary!op(other);
+        static if (op == "+" || op == "-" || op == "*")
+        {
+            return this.opBinary!op(other);
+        }
+        else static if (op == "/")
+        {
+            return Complex(other, 0).opBinary!op(Complex(this));
+        }
+        else static if (op == "^^")
+        {
+            ///TODO:
+        }
     }
 
     ///overload unary operators +,- and ~
