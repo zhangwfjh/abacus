@@ -13,8 +13,18 @@ template Float(size_t nbits)
         static assert(false, "The type is not supported");
 }
 
+import std.typecons;
+import std.math;
+
 /// Rational is a template class for rational numbers
 struct Rational(size_t nbits)
 {
-    /// TODO
+  int numerator;
+  int denominator;
+
+  @safe string toString() const
+  {
+      import std.format;
+      return format!"%s/%s"(numerator, denominator);
+  }
 }
