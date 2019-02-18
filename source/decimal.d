@@ -114,9 +114,10 @@ struct Rational(size_t nbits)
     }
     Rational opBinary(string op)(Rational other) const
     {
-            auto res = Rational (this);
-            return res.opOpAssign!op (other);
-            
+        static if (op == "+" || op == "-")
+        {
+            return mixin (Ratiaonal "~op~"other)
+        }
     }
 }
 
