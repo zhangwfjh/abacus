@@ -61,10 +61,10 @@ struct Rational(size_t nbits)
 
     bool opEquals (Rational other) const
     {
-        return other.num==num && other.den==den;
+        return other.num == num && other.den == den;
     }
 
-    Ratianal opUnary (string op)() const 
+    Rational opUnary (string op)() const 
     {
         static if (op == "+")
             return Rational (num,den);
@@ -119,6 +119,3 @@ struct Rational(size_t nbits)
             
     }
 }
-
-
-
