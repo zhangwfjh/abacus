@@ -37,15 +37,9 @@ static foreach (T; ["Integer", "Natural", "Float", "Rational", "Complex",
     mixin isSomeType!T;
 }
 
-/// Detect whether T is commutative
-
-/// Detect whether T is associative
-/// TODO
-
 @safe unittest
 {
     static assert(isScalar!Integer!16);
-    static assert(!isScalar!Integer!160);
     static assert(!isScalar!bool);
     static assert(!isField!Integer!16);
     static assert(isField!Rational!16);

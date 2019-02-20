@@ -13,7 +13,7 @@ struct Quaternion(size_t nbits, string components = "a, b, c, d")
 {
     import scalar.decimal : Float;
 
-    alias Real = scalar.decimal.Float!nbits;
+    alias Real = Float!nbits;
 
     union
     {
@@ -184,7 +184,7 @@ struct Quaternion(size_t nbits, string components = "a, b, c, d")
     }
 
     /// vector part
-    Tuple!(Real, Real, Real) vector() const
+    Tuple!(const Real, const Real, const Real) vector() const
     {
         return tuple(_[1], _[2], _[3]);
     }
