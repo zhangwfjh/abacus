@@ -61,10 +61,10 @@ struct Rational(size_t nbits)
 
     bool opEquals (Rational other) const
     {
-        return other.num == num && other.den == den;
+        return other.num==num && other.den==den;
     }
 
-    Rational opUnary (string op)() const 
+    Ratianal opUnary (string op)() const 
     {
         static if (op == "+")
             return Rational (num,den);
@@ -114,8 +114,12 @@ struct Rational(size_t nbits)
     }
     Rational opBinary(string op)(Rational other) const
     {
-            auto res = Rational (this);
-            return res.opOpAssign!op (other);
-            
+        static if (op == "+" || op == "-")
+        {
+            return mixin (Ratiaonal "~op~"other)
+        }
     }
 }
+
+
+
